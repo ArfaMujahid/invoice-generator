@@ -181,6 +181,43 @@ func (s *Server) handleSettingsTestSMTP(w http.ResponseWriter, r *http.Request) 
 	s.redirect(w, r, "/settings")
 }
 
+// handleSettingsSavePrefs validates and persists the invoicing preferences:
+// number prefix/format (FR-5.3) and default tax rate (FR-5.4).
+func (s *Server) handleSettingsSavePrefs(w http.ResponseWriter, r *http.Request) {
+	f, err := parseForm(r)
+	if err != nil {
+		s.handleError(w, r, err)
+		return
+	}
+	cfg, err := s.deps.Settings.Get(r.Context())
+	if err != nil {
+		s.handleError(w, r, err)
+		return
+	}
+
+	cfg.InvoicePrefix = f.Required("invoice_prefix", "Invoice prefix")
+	cfg.InvoiceFormat = f.Required("invoice_format", "Invoice format")
+	cfg.DefaultTaxRate = f.Float("default_tax_rate", 0)
+	if cfg.DefaultTaxRate < 0 || cfg.DefaultTaxRate > 100 {
+		f.Errors.Add("default_tax_rate", "must be between 0 and 100")
+	}
+
+	if !f.Valid() {
+		s.render(w, r, http.StatusUnprocessableEntity, "settings", settingsView{
+			Title:    "Settings",
+			Settings: cfg,
+			Errors:   f.Errors.Fields,
+		})
+		return
+	}
+	if err := s.deps.Settings.SavePreferences(r.Context(), cfg); err != nil {
+		s.serverError(w, err)
+		return
+	}
+	s.setFlash(w, flashSuccess, "Invoicing preferences saved.")
+	s.redirect(w, r, "/settings")
+}
+
 // saveLogo validates an uploaded logo by sniffing its content type, then writes
 // it into the uploads directory under a stable name, returning that filename. It
 // returns an *apperr.ValidationError for an unsupported image type so the caller

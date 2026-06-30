@@ -75,4 +75,34 @@
     </div>
   </section>
 </form>
+
+<form class="form" method="post" action="/settings/invoicing">
+  <section class="panel">
+    <h2>Invoicing</h2>
+
+    <label class="field">
+      <span class="field-label">Invoice prefix</span>
+      <input type="text" name="invoice_prefix" value="{{.Data.Settings.InvoicePrefix}}" placeholder="INV">
+      {{with index .Data.Errors "invoice_prefix"}}<span class="field-error">{{.}}</span>{{end}}
+    </label>
+
+    <label class="field">
+      <span class="field-label">Number format</span>
+      <input type="text" name="invoice_format" value="{{.Data.Settings.InvoiceFormat}}" placeholder="{PREFIX}-{YYYY}-{SEQ}">
+      <span class="field-hint">Tokens: {PREFIX}, {YYYY}, {YY}, {SEQ} (e.g. INV-2025-0001).</span>
+      {{with index .Data.Errors "invoice_format"}}<span class="field-error">{{.}}</span>{{end}}
+    </label>
+
+    <label class="field">
+      <span class="field-label">Default tax rate (%)</span>
+      <input type="text" name="default_tax_rate" value="{{.Data.Settings.DefaultTaxRate}}" placeholder="0">
+      <span class="field-hint">Pre-filled on new invoices; can be overridden per invoice.</span>
+      {{with index .Data.Errors "default_tax_rate"}}<span class="field-error">{{.}}</span>{{end}}
+    </label>
+
+    <div class="actions">
+      <button type="submit" class="btn">Save invoicing</button>
+    </div>
+  </section>
+</form>
 {{end}}

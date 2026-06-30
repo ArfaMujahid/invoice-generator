@@ -69,3 +69,43 @@ func TestSaveProfileRoundTrip(t *testing.T) {
 		t.Errorf("SaveProfile clobbered unrelated settings: prefix=%q port=%d", got.InvoicePrefix, got.SMTPPort)
 	}
 }
+
+// TestSavePreferencesRoundTrip verifies numbering + default tax persist.
+func TestSavePreferencesRoundTrip(t *testing.T) {
+	ctx := context.Background()
+	repo := newTestStore(t)
+
+	in := Settings{InvoicePrefix: "AB", InvoiceFormat: "{PREFIX}/{YY}/{SEQ}", DefaultTaxRate: 15}
+	if err := repo.SavePreferences(ctx, in); err != nil {
+		t.Fatalf("SavePreferences() error: %v", err)
+	}
+	got, err := repo.Get(ctx)
+	if err != nil {
+		t.Fatalf("Get() error: %v", err)
+	}
+	if got.InvoicePrefix != "AB" || got.InvoiceFormat != "{PREFIX}/{YY}/{SEQ}" || got.DefaultTaxRate != 15 {
+		t.Errorf("preferences not persisted: %+v", got)
+	}
+}
+
+// TestFormatNumber checks token expansion and the empty-format fallback.
+func TestFormatNumber(t *testing.T) {
+	tests := []struct {
+		name string
+		cfg  Settings
+		seq  int
+		year int
+		want string
+	}{
+		{"default tokens", Settings{InvoicePrefix: "INV", InvoiceFormat: "{PREFIX}-{YYYY}-{SEQ}"}, 7, 2025, "INV-2025-0007"},
+		{"short year", Settings{InvoicePrefix: "AB", InvoiceFormat: "{PREFIX}/{YY}/{SEQ}"}, 42, 2025, "AB/25/0042"},
+		{"empty format fallback", Settings{InvoicePrefix: "X", InvoiceFormat: ""}, 1, 2024, "X-2024-0001"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.cfg.FormatNumber(tt.seq, tt.year); got != tt.want {
+				t.Errorf("FormatNumber() = %q; want %q", got, tt.want)
+			}
+		})
+	}
+}

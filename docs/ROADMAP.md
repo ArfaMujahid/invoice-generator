@@ -26,8 +26,8 @@ Legend: ✅ done · 🟡 in progress · ⬜ todo
 |---|------|-----|-----|--------|
 | 1.1 | Business profile (name, address, tax ID) + logo upload; shown on PDFs | FR-5.1 | Must | ✅ |
 | 1.2 | SMTP settings (host/port/user/pass) + "Test connection" | FR-5.2 | Must | ✅ |
-| 1.3 | Invoice-number format/prefix with auto-increment | FR-5.3 | Should | ⬜ |
-| 1.4 | Default tax rate pre-filled on new invoices | FR-5.4 | Nice | ⬜ |
+| 1.3 | Invoice-number format/prefix with auto-increment | FR-5.3 | Should | ✅ |
+| 1.4 | Default tax rate pre-filled on new invoices | FR-5.4 | Nice | ✅ |
 
 ## Phase 2 — Client management (Module 1)
 

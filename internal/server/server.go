@@ -42,6 +42,7 @@ type SettingsStore interface {
 	Get(ctx context.Context) (settings.Settings, error)
 	SaveProfile(ctx context.Context, cfg settings.Settings) error
 	SaveSMTP(ctx context.Context, cfg settings.Settings) error
+	SavePreferences(ctx context.Context, cfg settings.Settings) error
 }
 
 // PDFRenderer renders an invoice to PDF bytes (FR-2.4).
@@ -110,6 +111,7 @@ func (s *Server) routes() http.Handler {
 	mux.HandleFunc("POST /settings", s.handleSettingsSave)
 	mux.HandleFunc("POST /settings/smtp", s.handleSettingsSaveSMTP)
 	mux.HandleFunc("POST /settings/smtp/test", s.handleSettingsTestSMTP)
+	mux.HandleFunc("POST /settings/invoicing", s.handleSettingsSavePrefs)
 
 	// Logging is outermost so it records the final status even when recoverer
 	// converts a handler panic into a 500.

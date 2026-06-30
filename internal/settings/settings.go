@@ -6,6 +6,7 @@ package settings
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/ArfaMujahid/invoice-generator/internal/store"
 )
@@ -104,4 +105,39 @@ func (s *Store) SaveSMTP(ctx context.Context, cfg Settings) error {
 		return fmt.Errorf("saving smtp settings: %w", err)
 	}
 	return nil
+}
+
+// savePrefsQuery updates the invoicing preferences: number prefix/format and the
+// default tax rate.
+const savePrefsQuery = `
+UPDATE settings
+SET invoice_prefix = ?, invoice_format = ?, default_tax_rate = ?
+WHERE id = 1`
+
+// SavePreferences persists the invoice-numbering format and prefix (FR-5.3) and
+// the default tax rate pre-filled on new invoices (FR-5.4).
+func (s *Store) SavePreferences(ctx context.Context, cfg Settings) error {
+	if _, err := s.st.DB().ExecContext(ctx, savePrefsQuery,
+		cfg.InvoicePrefix, cfg.InvoiceFormat, cfg.DefaultTaxRate,
+	); err != nil {
+		return fmt.Errorf("saving invoicing preferences: %w", err)
+	}
+	return nil
+}
+
+// FormatNumber expands the configured invoice-number format for the given
+// sequence number and year (FR-5.3). Supported tokens: {PREFIX}, {YYYY}, {YY},
+// and {SEQ} (zero-padded to four digits). An empty format falls back to a sane
+// default.
+func (cfg Settings) FormatNumber(seq, year int) string {
+	format := cfg.InvoiceFormat
+	if strings.TrimSpace(format) == "" {
+		format = "{PREFIX}-{YYYY}-{SEQ}"
+	}
+	return strings.NewReplacer(
+		"{PREFIX}", cfg.InvoicePrefix,
+		"{YYYY}", fmt.Sprintf("%04d", year),
+		"{YY}", fmt.Sprintf("%02d", year%100),
+		"{SEQ}", fmt.Sprintf("%04d", seq),
+	).Replace(format)
 }
