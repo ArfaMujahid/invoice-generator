@@ -1,0 +1,29 @@
+{{define "content"}}
+<h1>Dashboard</h1>
+<p class="muted">Summary across all invoices (FR-3.2).</p>
+
+<section class="cards">
+  <div class="card">
+    <span class="card-label">Total invoiced</span>
+    <span class="card-value">{{money .Summary.TotalInvoiced}}</span>
+  </div>
+  <div class="card">
+    <span class="card-label">Total paid</span>
+    <span class="card-value">{{money .Summary.TotalPaid}}</span>
+  </div>
+  <div class="card">
+    <span class="card-label">Outstanding</span>
+    <span class="card-value">{{money .Summary.TotalOutstanding}}</span>
+  </div>
+  <div class="card card--warn">
+    <span class="card-label">Overdue</span>
+    <span class="card-value">{{money .Summary.TotalOverdue}}</span>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Recent invoices</h2>
+  <p class="muted">No invoices yet. The invoice list and recent-activity table
+  arrive with Module 2 (invoice creation).</p>
+</section>
+{{end}}

@@ -1,0 +1,26 @@
+{{define "layout"}}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.Title}} · Invoice Generator</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">Invoice Generator</a>
+    <nav class="nav">
+      <a href="/">Dashboard</a>
+      <a href="/clients">Clients</a>
+      <a href="/invoices">Invoices</a>
+      <a href="/settings">Settings</a>
+    </nav>
+  </header>
+  <main class="container">
+    {{block "content" .}}{{end}}
+  </main>
+  <footer class="footer">
+    <span>Invoice Generator &amp; Tracker — v1.0 skeleton</span>
+  </footer>
+</body>
+</html>{{end}}

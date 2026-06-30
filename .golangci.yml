@@ -1,0 +1,24 @@
+# golangci-lint configuration for the Invoice Generator.
+# Aligned with CODING-STANDARDS.md §1 (tooling) and §14 (review checklist).
+run:
+  timeout: 3m
+
+linters:
+  enable:
+    - errcheck      # every error is checked (§3)
+    - govet         # printf mismatches, copied locks, bad tags (§1)
+    - staticcheck   # broad correctness analysis
+    - ineffassign   # ineffectual assignments
+    - unused        # dead code
+    - gofmt         # canonical formatting (§1)
+    - goimports     # import grouping/ordering (§1)
+    - misspell      # spelling in comments/strings
+    - bodyclose     # HTTP response bodies are closed (§6)
+    - revive        # style, including exported-symbol doc comments (§0, §11)
+
+issues:
+  # Allow the deliberate, marked apperr.ErrNotImplemented stubs in the skeleton.
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck

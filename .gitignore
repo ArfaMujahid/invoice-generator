@@ -1,0 +1,22 @@
+# Compiled binaries / build output
+/bin/
+/invoice
+/invoice-generator
+*.exe
+
+# SQLite database files and WAL/SHM sidecars (runtime data, never committed)
+*.db
+*.db-wal
+*.db-shm
+
+# Uploaded assets at runtime (e.g. business logo)
+/uploads/
+
+# Go test/coverage artifacts
+*.out
+coverage.*
+
+# Editor / OS noise
+.idea/
+.vscode/
+.DS_Store
