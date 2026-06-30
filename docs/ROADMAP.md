@@ -37,7 +37,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ todo
 | 2.2 | Validate email format + required fields before save | FR-1.6 | Must | ✅ |
 | 2.3 | Edit/update client | FR-1.2 | Must | ✅ |
 | 2.4 | Clients list table with invoiced + outstanding totals | FR-1.3 | Must | ✅ |
-| 2.5 | Client detail: full invoice history | FR-1.4 | Should | ⬜ |
+| 2.5 | Client detail: full invoice history | FR-1.4 | Should | ✅ |
 | 2.6 | Archive (soft-delete) client | FR-1.5 | Nice | ✅ |
 
 ## Phase 3 — Invoice creation (Module 2)

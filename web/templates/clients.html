@@ -21,6 +21,7 @@
       <td class="num">{{money .TotalInvoiced}}</td>
       <td class="num">{{money .Outstanding}}</td>
       <td class="actions-cell">
+        <a href="/clients/{{.ID}}">View</a>
         <a href="/clients/{{.ID}}/edit">Edit</a>
         <form method="post" action="/clients/{{.ID}}/archive" onsubmit="return confirm('Archive this client?')">
           <button type="submit" class="link-btn">Archive</button>

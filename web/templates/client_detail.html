@@ -1,0 +1,41 @@
+{{define "content"}}
+{{$c := .Data.Client}}
+<div class="page-head">
+  <h1>{{$c.Name}}</h1>
+  <a class="btn btn--secondary" href="/clients/{{$c.ID}}/edit">Edit</a>
+</div>
+
+<section class="panel">
+  <p>
+    {{with $c.Company}}<strong>{{.}}</strong><br>{{end}}
+    {{with $c.Email}}{{.}}<br>{{end}}
+    {{with $c.Phone}}{{.}}<br>{{end}}
+    {{with $c.BillingAddress}}{{.}}{{end}}
+  </p>
+</section>
+
+<section class="panel">
+  <h2>Invoice history</h2>
+  {{if .Data.Invoices}}
+  <table class="table">
+    <thead>
+      <tr><th>Number</th><th>Issued</th><th>Due</th><th>Status</th><th class="num">Total</th><th class="num">Balance</th></tr>
+    </thead>
+    <tbody>
+      {{range .Data.Invoices}}
+      <tr>
+        <td><a href="/invoices/{{.ID}}">{{.Number}}</a></td>
+        <td>{{.IssueDate}}</td>
+        <td>{{.DueDate}}</td>
+        <td><span class="badge badge--{{.Status}}">{{.Status}}</span></td>
+        <td class="num">{{.Currency}} {{money .Total}}</td>
+        <td class="num">{{.Currency}} {{money .Balance}}</td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted">No invoices for this client yet.</p>
+  {{end}}
+</section>
+{{end}}

@@ -8,7 +8,15 @@ import (
 
 	"github.com/ArfaMujahid/invoice-generator/internal/apperr"
 	"github.com/ArfaMujahid/invoice-generator/internal/client"
+	"github.com/ArfaMujahid/invoice-generator/internal/invoice"
 )
+
+// clientDetailView is the data for a client's detail page (FR-1.4).
+type clientDetailView struct {
+	Title    string
+	Client   client.Client
+	Invoices []invoice.ListItem
+}
 
 // clientsView is the data for the clients list page.
 type clientsView struct {
@@ -32,6 +40,28 @@ func (s *Server) handleClientsList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.render(w, r, http.StatusOK, "clients", clientsView{Title: "Clients", Clients: clients})
+}
+
+// handleClientDetail shows a client's details and full invoice history (FR-1.4).
+func (s *Server) handleClientDetail(w http.ResponseWriter, r *http.Request) {
+	id, err := idParam(r, "id")
+	if err != nil {
+		s.handleError(w, r, apperr.ErrNotFound)
+		return
+	}
+	cl, err := s.deps.Clients.Get(r.Context(), id)
+	if err != nil {
+		s.handleError(w, r, err)
+		return
+	}
+	invs, err := s.deps.Invoices.List(r.Context(), invoice.Filter{ClientID: id})
+	if err != nil {
+		s.handleError(w, r, err)
+		return
+	}
+	s.render(w, r, http.StatusOK, "client_detail", clientDetailView{
+		Title: cl.Name, Client: cl, Invoices: invs,
+	})
 }
 
 // handleClientNew renders the empty create-client form (FR-1.1).

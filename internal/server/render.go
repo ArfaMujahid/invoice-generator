@@ -15,7 +15,7 @@ import (
 // shared layout. Add a page's base name here when you add its template file.
 var pages = []string{
 	"dashboard", "message", "settings",
-	"clients", "client_form",
+	"clients", "client_form", "client_detail",
 	"invoices", "invoice_form", "invoice_view",
 }
 

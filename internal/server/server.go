@@ -117,6 +117,7 @@ func (s *Server) routes() http.Handler {
 	mux.HandleFunc("GET /clients", s.handleClientsList)
 	mux.HandleFunc("GET /clients/new", s.handleClientNew)
 	mux.HandleFunc("POST /clients", s.handleClientCreate)
+	mux.HandleFunc("GET /clients/{id}", s.handleClientDetail)
 	mux.HandleFunc("GET /clients/{id}/edit", s.handleClientEdit)
 	mux.HandleFunc("POST /clients/{id}", s.handleClientUpdate)
 	mux.HandleFunc("POST /clients/{id}/archive", s.handleClientArchive)
