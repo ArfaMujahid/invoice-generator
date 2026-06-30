@@ -55,7 +55,7 @@ type SettingsStore interface {
 
 // PDFRenderer renders an invoice to PDF bytes (FR-2.4).
 type PDFRenderer interface {
-	Render(ctx context.Context, inv invoice.Invoice, cfg settings.Settings) ([]byte, error)
+	Render(ctx context.Context, inv invoice.Invoice, cl client.Client, cfg settings.Settings) ([]byte, error)
 }
 
 // Mailer sends invoices and reminders, and verifies SMTP settings (SRS Module 4).
@@ -125,6 +125,7 @@ func (s *Server) routes() http.Handler {
 	mux.HandleFunc("GET /invoices/new", s.handleInvoiceNew)
 	mux.HandleFunc("POST /invoices", s.handleInvoiceCreate)
 	mux.HandleFunc("GET /invoices/{id}", s.handleInvoiceView)
+	mux.HandleFunc("GET /invoices/{id}/pdf", s.handleInvoicePDF)
 	mux.HandleFunc("GET /invoices/{id}/edit", s.handleInvoiceEdit)
 	mux.HandleFunc("POST /invoices/{id}", s.handleInvoiceUpdate)
 	mux.HandleFunc("POST /invoices/{id}/status", s.handleInvoiceStatus)

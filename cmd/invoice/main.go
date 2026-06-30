@@ -60,7 +60,7 @@ func run() error {
 	clients := client.NewStore(st)
 	invoices := invoice.NewStore(st)
 	cfgStore := settings.NewStore(st)
-	pdfGen := pdf.NewGenerator()
+	pdfGen := pdf.NewGenerator(cfg.UploadsDir)
 	mailer := email.NewSMTPSender()
 
 	srv := server.New(server.Deps{

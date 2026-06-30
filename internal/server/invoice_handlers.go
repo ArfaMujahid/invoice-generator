@@ -150,6 +150,40 @@ func (s *Server) handleInvoiceView(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// handleInvoicePDF generates and streams the branded invoice PDF (FR-2.4).
+func (s *Server) handleInvoicePDF(w http.ResponseWriter, r *http.Request) {
+	id, err := idParam(r, "id")
+	if err != nil {
+		s.handleError(w, r, apperr.ErrNotFound)
+		return
+	}
+	inv, err := s.deps.Invoices.Get(r.Context(), id)
+	if err != nil {
+		s.handleError(w, r, err)
+		return
+	}
+	cl, err := s.deps.Clients.Get(r.Context(), inv.ClientID)
+	if err != nil {
+		s.handleError(w, r, err)
+		return
+	}
+	cfg, err := s.deps.Settings.Get(r.Context())
+	if err != nil {
+		s.handleError(w, r, err)
+		return
+	}
+	data, err := s.deps.PDF.Render(r.Context(), inv, cl, cfg)
+	if err != nil {
+		s.serverError(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/pdf")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("inline; filename=%q", inv.Number+".pdf"))
+	if _, err := w.Write(data); err != nil {
+		s.deps.Logger.Warn("writing pdf response", "err", err)
+	}
+}
+
 // handleInvoiceEdit renders the editor populated with an existing invoice (FR-2.7).
 func (s *Server) handleInvoiceEdit(w http.ResponseWriter, r *http.Request) {
 	id, err := idParam(r, "id")

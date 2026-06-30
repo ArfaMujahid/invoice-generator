@@ -56,7 +56,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ todo
 
 | # | Item | Req | Pri | Status |
 |---|------|-----|-----|--------|
-| 4.1 | Branded PDF: logo, business + client details, line items, totals, payment instructions | FR-2.4 | Must | ⬜ |
+| 4.1 | Branded PDF: logo, business + client details, line items, totals, payment instructions | FR-2.4 | Must | ✅ |
 
 ## Phase 5 — Invoice list, dashboard & tracking (Module 3)
 
