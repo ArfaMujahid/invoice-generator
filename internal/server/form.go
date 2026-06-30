@@ -44,6 +44,12 @@ func (f *form) String(field string) string {
 	return strings.TrimSpace(f.values.Get(field))
 }
 
+// Strings returns all submitted values for a repeated field (e.g. line-item
+// inputs named "description[]"), untrimmed and in submission order.
+func (f *form) Strings(field string) []string {
+	return f.values[field]
+}
+
 // Required returns the trimmed value of field, recording a validation error
 // (labelled for display) when it is empty.
 func (f *form) Required(field, label string) string {

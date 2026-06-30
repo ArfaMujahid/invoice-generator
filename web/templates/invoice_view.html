@@ -1,0 +1,86 @@
+{{define "content"}}
+{{$inv := .Data.Invoice}}
+<div class="page-head">
+  <h1>Invoice {{$inv.Number}} <span class="badge badge--{{$inv.Status}}">{{$inv.Status}}</span></h1>
+  <div class="actions">
+    <a class="btn btn--secondary" href="/invoices/{{$inv.ID}}/edit">Edit</a>
+    <a class="btn" href="/invoices/{{$inv.ID}}/pdf">Download PDF</a>
+  </div>
+</div>
+
+<section class="panel invoice-doc">
+  <div class="invoice-parties">
+    <div>
+      <h3>Bill to</h3>
+      <p>
+        <strong>{{.Data.Client.Name}}</strong><br>
+        {{with .Data.Client.Company}}{{.}}<br>{{end}}
+        {{with .Data.Client.Email}}{{.}}<br>{{end}}
+        {{with .Data.Client.BillingAddress}}{{.}}{{end}}
+      </p>
+    </div>
+    <div class="invoice-meta">
+      <p>Issued: {{dateISO $inv.IssueDate}}</p>
+      <p>Due: {{dateISO $inv.DueDate}}</p>
+      <p>Currency: {{$inv.Currency}}</p>
+    </div>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr><th>Description</th><th class="num">Qty</th><th class="num">Unit price</th><th class="num">Total</th></tr>
+    </thead>
+    <tbody>
+      {{range $inv.LineItems}}
+      <tr>
+        <td>{{.Description}}</td>
+        <td class="num">{{.Quantity}}</td>
+        <td class="num">{{money .UnitPrice}}</td>
+        <td class="num">{{money .LineTotal}}</td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <div><span>Subtotal</span><span>{{$inv.Currency}} {{money $inv.Subtotal}}</span></div>
+    <div><span>Tax ({{$inv.TaxRate}}%)</span><span>{{$inv.Currency}} {{money $inv.Tax}}</span></div>
+    <div class="totals-grand"><span>Total</span><span>{{$inv.Currency}} {{money $inv.Total}}</span></div>
+    <div><span>Paid</span><span>{{$inv.Currency}} {{money $inv.Paid}}</span></div>
+    <div class="totals-grand"><span>Balance</span><span>{{$inv.Currency}} {{money $inv.Balance}}</span></div>
+  </div>
+
+  {{with $inv.Notes}}<div class="invoice-notes"><h3>Notes</h3><p>{{.}}</p></div>{{end}}
+</section>
+
+<section class="panel">
+  <h2>Status</h2>
+  {{$st := printf "%s" $inv.Status}}
+  <form class="inline-form" method="post" action="/invoices/{{$inv.ID}}/status">
+    <select name="status">
+      <option value="draft"   {{if eq $st "draft"}}selected{{end}}>draft</option>
+      <option value="sent"    {{if eq $st "sent"}}selected{{end}}>sent</option>
+      <option value="paid"    {{if eq $st "paid"}}selected{{end}}>paid</option>
+      <option value="overdue" {{if eq $st "overdue"}}selected{{end}}>overdue</option>
+    </select>
+    <button type="submit" class="btn btn--secondary">Update status</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Record payment</h2>
+  <form class="inline-form" method="post" action="/invoices/{{$inv.ID}}/payments">
+    <input type="text" name="amount" placeholder="Amount (e.g. 100.00)" required>
+    <input type="date" name="paid_on">
+    <button type="submit" class="btn">Add payment</button>
+  </form>
+  {{if $inv.Payments}}
+  <table class="table">
+    <thead><tr><th>Date</th><th class="num">Amount</th></tr></thead>
+    <tbody>
+      {{range $inv.Payments}}<tr><td>{{dateISO .PaidOn}}</td><td class="num">{{money .Amount}}</td></tr>{{end}}
+    </tbody>
+  </table>
+  {{end}}
+</section>
+{{end}}

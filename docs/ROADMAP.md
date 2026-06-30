@@ -44,12 +44,12 @@ Legend: ✅ done · 🟡 in progress · ⬜ todo
 
 | # | Item | Req | Pri | Status |
 |---|------|-----|-----|--------|
-| 3.1 | Create invoice: select client, auto number, issue/due dates | FR-2.1 | Must | ⬜ |
-| 3.2 | Add/remove line items; per-row total (qty × price) | FR-2.2 | Must | ⬜ |
-| 3.3 | Subtotal + tax + grand total, live recalculation | FR-2.3 | Must | ⬜ (money/total logic done) |
-| 3.4 | Save invoice as Draft and re-edit | FR-2.7 | Must | ⬜ |
-| 3.5 | Notes / payment-terms free-text field | FR-2.5 | Should | ⬜ |
-| 3.6 | Per-invoice currency selection | FR-2.6 | Should | ⬜ |
+| 3.1 | Create invoice: select client, auto number, issue/due dates | FR-2.1 | Must | ✅ |
+| 3.2 | Add/remove line items; per-row total (qty × price) | FR-2.2 | Must | ✅ |
+| 3.3 | Subtotal + tax + grand total, live recalculation | FR-2.3 | Must | ✅ |
+| 3.4 | Save invoice as Draft and re-edit | FR-2.7 | Must | ✅ |
+| 3.5 | Notes / payment-terms free-text field | FR-2.5 | Should | ✅ |
+| 3.6 | Per-invoice currency selection | FR-2.6 | Should | ✅ |
 | 3.7 | Duplicate an existing invoice | FR-2.8 | Nice | ⬜ |
 
 ## Phase 4 — PDF generation (Module 2)
@@ -62,9 +62,9 @@ Legend: ✅ done · 🟡 in progress · ⬜ todo
 
 | # | Item | Req | Pri | Status |
 |---|------|-----|-----|--------|
-| 5.1 | Invoice status Draft/Sent/Paid/Overdue + manual change | FR-3.1 | Must | ⬜ |
-| 5.2 | Invoice list: filter by status/client/date, search | FR-3.3 | Must | ⬜ |
-| 5.3 | Record partial payments; show remaining balance | FR-3.5 | Should | ⬜ (balance logic done) |
+| 5.1 | Invoice status Draft/Sent/Paid/Overdue + manual change | FR-3.1 | Must | ✅ |
+| 5.2 | Invoice list: filter by status/client/date, search | FR-3.3 | Must | ✅ |
+| 5.3 | Record partial payments; show remaining balance | FR-3.5 | Should | ✅ |
 | 5.4 | Daily job: mark unpaid past-due invoices Overdue | FR-3.4 | Should | ⬜ |
 | 5.5 | Dashboard monthly invoiced-vs-collected chart | FR-3.6 | Nice | ⬜ |
 

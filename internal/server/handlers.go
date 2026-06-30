@@ -43,17 +43,6 @@ func (s *Server) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// handleInvoicesList will render the filterable invoice table (FR-3.3). Wired to
-// the invoice store, currently apperr.ErrNotImplemented → HTTP 501.
-func (s *Server) handleInvoicesList(w http.ResponseWriter, r *http.Request) {
-	_, err := s.deps.Invoices.List(r.Context(), invoice.Filter{})
-	if err != nil {
-		s.handleError(w, r, err)
-		return
-	}
-	s.handleError(w, r, apperr.ErrNotImplemented)
-}
-
 // handleError maps a domain error to an HTTP status and renders the message
 // page. It centralises the error→status mapping so every handler reports
 // consistently (coding-standards §3: handle each error once, at the boundary).

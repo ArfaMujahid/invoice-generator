@@ -34,8 +34,14 @@ type Clients interface {
 // Modules 2 & 3).
 type Invoices interface {
 	Summary(ctx context.Context) (invoice.Summary, error)
-	List(ctx context.Context, f invoice.Filter) ([]invoice.Invoice, error)
+	List(ctx context.Context, f invoice.Filter) ([]invoice.ListItem, error)
 	Get(ctx context.Context, id int64) (invoice.Invoice, error)
+	Create(ctx context.Context, inv invoice.Invoice, cfg settings.Settings) (invoice.Invoice, error)
+	Update(ctx context.Context, inv invoice.Invoice) (invoice.Invoice, error)
+	SetStatus(ctx context.Context, id int64, status invoice.Status) error
+	MarkSent(ctx context.Context, id int64) error
+	RecordReminder(ctx context.Context, id int64) error
+	AddPayment(ctx context.Context, p invoice.Payment) (invoice.Money, error)
 }
 
 // SettingsStore is the subset of settings operations the HTTP layer needs (SRS
@@ -116,6 +122,14 @@ func (s *Server) routes() http.Handler {
 	mux.HandleFunc("POST /clients/{id}/archive", s.handleClientArchive)
 
 	mux.HandleFunc("GET /invoices", s.handleInvoicesList)
+	mux.HandleFunc("GET /invoices/new", s.handleInvoiceNew)
+	mux.HandleFunc("POST /invoices", s.handleInvoiceCreate)
+	mux.HandleFunc("GET /invoices/{id}", s.handleInvoiceView)
+	mux.HandleFunc("GET /invoices/{id}/edit", s.handleInvoiceEdit)
+	mux.HandleFunc("POST /invoices/{id}", s.handleInvoiceUpdate)
+	mux.HandleFunc("POST /invoices/{id}/status", s.handleInvoiceStatus)
+	mux.HandleFunc("POST /invoices/{id}/payments", s.handleInvoicePayment)
+
 	mux.HandleFunc("GET /settings", s.handleSettings)
 	mux.HandleFunc("POST /settings", s.handleSettingsSave)
 	mux.HandleFunc("POST /settings/smtp", s.handleSettingsSaveSMTP)

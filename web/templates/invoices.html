@@ -1,0 +1,49 @@
+{{define "content"}}
+<div class="page-head">
+  <h1>Invoices</h1>
+  <a class="btn" href="/invoices/new">New invoice</a>
+</div>
+
+<form class="filters" method="get" action="/invoices">
+  <input type="search" name="q" value="{{.Data.Filter.Search}}" placeholder="Search number or client">
+  <select name="status">
+    <option value="">All statuses</option>
+    {{$cur := .Data.Filter.Status}}
+    {{range .Data.Statuses}}<option value="{{.}}" {{if eq . $cur}}selected{{end}}>{{.}}</option>{{end}}
+  </select>
+  <select name="client_id">
+    <option value="">All clients</option>
+    {{$cid := .Data.Filter.ClientID}}
+    {{range .Data.Clients}}<option value="{{.ID}}" {{if eq .ID $cid}}selected{{end}}>{{.Name}}</option>{{end}}
+  </select>
+  <input type="date" name="from" value="{{.Data.Filter.From}}">
+  <input type="date" name="to" value="{{.Data.Filter.To}}">
+  <button type="submit" class="btn btn--secondary">Filter</button>
+</form>
+
+{{if .Data.Invoices}}
+<table class="table">
+  <thead>
+    <tr>
+      <th>Number</th><th>Client</th><th>Issued</th><th>Due</th><th>Status</th>
+      <th class="num">Total</th><th class="num">Balance</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{range .Data.Invoices}}
+    <tr>
+      <td><a href="/invoices/{{.ID}}">{{.Number}}</a></td>
+      <td>{{.ClientName}}</td>
+      <td>{{.IssueDate}}</td>
+      <td>{{.DueDate}}</td>
+      <td><span class="badge badge--{{.Status}}">{{.Status}}</span></td>
+      <td class="num">{{.Currency}} {{money .Total}}</td>
+      <td class="num">{{.Currency}} {{money .Balance}}</td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{else}}
+<div class="panel"><p class="muted">No invoices match. Create one to get started.</p></div>
+{{end}}
+{{end}}

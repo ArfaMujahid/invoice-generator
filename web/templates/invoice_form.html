@@ -1,0 +1,105 @@
+{{define "content"}}
+<h1>{{.Data.Title}}</h1>
+{{with index .Data.Errors "line_items"}}<div class="flash flash--error">{{.}}</div>{{end}}
+
+<form class="form" method="post" action="{{.Data.Action}}" id="invoice-form">
+  <section class="panel">
+    <div class="grid-2">
+      <label class="field">
+        <span class="field-label">Client</span>
+        <select name="client_id" required>
+          <option value="">Select a client…</option>
+          {{$cid := .Data.Invoice.ClientID}}
+          {{range .Data.Clients}}<option value="{{.ID}}" {{if eq .ID $cid}}selected{{end}}>{{.Name}}</option>{{end}}
+        </select>
+        {{with index .Data.Errors "client_id"}}<span class="field-error">{{.}}</span>{{end}}
+      </label>
+
+      <label class="field">
+        <span class="field-label">Currency</span>
+        <select name="currency">
+          {{$cur := .Data.Invoice.Currency}}
+          {{range .Data.Currencies}}<option value="{{.}}" {{if eq . $cur}}selected{{end}}>{{.}}</option>{{end}}
+        </select>
+      </label>
+
+      <label class="field">
+        <span class="field-label">Issue date</span>
+        <input type="date" name="issue_date" value="{{dateISO .Data.Invoice.IssueDate}}" required>
+        {{with index .Data.Errors "issue_date"}}<span class="field-error">{{.}}</span>{{end}}
+      </label>
+
+      <label class="field">
+        <span class="field-label">Due date</span>
+        <input type="date" name="due_date" value="{{dateISO .Data.Invoice.DueDate}}" required>
+        {{with index .Data.Errors "due_date"}}<span class="field-error">{{.}}</span>{{end}}
+      </label>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Line items</h2>
+    <table class="table" id="line-items">
+      <thead>
+        <tr><th>Description</th><th class="num">Qty</th><th class="num">Unit price</th><th class="num">Total</th><th></th></tr>
+      </thead>
+      <tbody>
+        {{if .Data.Invoice.LineItems}}
+          {{range .Data.Invoice.LineItems}}
+          <tr class="li-row">
+            <td><input type="text" name="description[]" value="{{.Description}}"></td>
+            <td class="num"><input type="text" name="quantity[]" class="li-qty" value="{{.Quantity}}"></td>
+            <td class="num"><input type="text" name="unit_price[]" class="li-price" value="{{money .UnitPrice}}"></td>
+            <td class="num li-total">0.00</td>
+            <td><button type="button" class="link-btn li-remove">remove</button></td>
+          </tr>
+          {{end}}
+        {{else}}
+          <tr class="li-row">
+            <td><input type="text" name="description[]"></td>
+            <td class="num"><input type="text" name="quantity[]" class="li-qty" value="1"></td>
+            <td class="num"><input type="text" name="unit_price[]" class="li-price" value="0.00"></td>
+            <td class="num li-total">0.00</td>
+            <td><button type="button" class="link-btn li-remove">remove</button></td>
+          </tr>
+        {{end}}
+      </tbody>
+    </table>
+    <button type="button" class="btn btn--secondary" id="add-line">Add line</button>
+
+    <div class="totals">
+      <div><span>Subtotal</span><span id="subtotal">0.00</span></div>
+      <div>
+        <span>Tax (<input type="text" name="tax_rate" id="tax_rate" value="{{.Data.Invoice.TaxRate}}" class="tax-input">%)</span>
+        <span id="tax">0.00</span>
+      </div>
+      <div class="totals-grand"><span>Total</span><span id="grand-total">0.00</span></div>
+    </div>
+    {{with index .Data.Errors "tax_rate"}}<span class="field-error">{{.}}</span>{{end}}
+  </section>
+
+  <section class="panel">
+    <label class="field">
+      <span class="field-label">Notes / payment terms</span>
+      <textarea name="notes" rows="3" placeholder="Bank details, payment instructions…">{{.Data.Invoice.Notes}}</textarea>
+    </label>
+  </section>
+
+  <div class="actions">
+    <button type="submit" class="btn">Save invoice</button>
+    <a class="btn btn--secondary" href="/invoices">Cancel</a>
+  </div>
+</form>
+
+<template id="li-template">
+  <tr class="li-row">
+    <td><input type="text" name="description[]"></td>
+    <td class="num"><input type="text" name="quantity[]" class="li-qty" value="1"></td>
+    <td class="num"><input type="text" name="unit_price[]" class="li-price" value="0.00"></td>
+    <td class="num li-total">0.00</td>
+    <td><button type="button" class="link-btn li-remove">remove</button></td>
+  </tr>
+</template>
+
+<script src="/static/js/invoice.js"></script>
+{{end}}

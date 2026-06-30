@@ -166,6 +166,43 @@ h1 { margin-top: 0; }
 }
 .link-btn:hover { text-decoration: underline; }
 
+/* Two-column field grid */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.25rem; }
+@media (max-width: 560px) { .grid-2 { grid-template-columns: 1fr; } }
+
+.field select,
+.inline-form select,
+.inline-form input,
+.filters input,
+.filters select {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  background: #fff;
+}
+.field select { width: 100%; }
+
+/* Filters bar */
+.filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; align-items: center; }
+
+/* Inline forms (status change, payment) */
+.inline-form { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+
+/* Line-item totals footer */
+.totals { margin-top: 1rem; margin-left: auto; max-width: 320px; }
+.totals > div { display: flex; justify-content: space-between; padding: 0.3rem 0; }
+.totals-grand { border-top: 1px solid var(--border); font-weight: 700; font-size: 1.05rem; }
+.tax-input { width: 4rem; padding: 0.15rem 0.35rem; border: 1px solid var(--border); border-radius: 6px; }
+
+.li-qty, .li-price { width: 6rem; text-align: right; padding: 0.4rem 0.5rem; border: 1px solid var(--border); border-radius: 6px; }
+#line-items input[name="description[]"] { width: 100%; padding: 0.4rem 0.5rem; border: 1px solid var(--border); border-radius: 6px; }
+
+/* Invoice document (preview) */
+.invoice-parties { display: flex; justify-content: space-between; gap: 1.5rem; margin-bottom: 1rem; }
+.invoice-meta { text-align: right; color: var(--muted); }
+.invoice-notes { margin-top: 1rem; }
+
 /* Status badges */
 .badge { display: inline-block; padding: 0.15rem 0.55rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
 .badge--draft   { background: #f3f4f6; color: #374151; }

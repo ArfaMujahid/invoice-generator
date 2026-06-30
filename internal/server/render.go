@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"time"
 
 	"github.com/ArfaMujahid/invoice-generator/internal/invoice"
 	"github.com/ArfaMujahid/invoice-generator/web"
@@ -12,14 +13,19 @@ import (
 
 // pages lists the content templates that are each compiled together with the
 // shared layout. Add a page's base name here when you add its template file.
-var pages = []string{"dashboard", "message", "settings", "clients", "client_form"}
+var pages = []string{
+	"dashboard", "message", "settings",
+	"clients", "client_form",
+	"invoices", "invoice_form", "invoice_view",
+}
 
 // parseTemplates compiles every page in pages with the shared layout and the
 // view helper functions, returning a name→template map. It is called once at
 // startup; a parse failure there is a programmer error that should stop boot.
 func parseTemplates() (map[string]*template.Template, error) {
 	funcs := template.FuncMap{
-		"money": money,
+		"money":   money,
+		"dateISO": dateISO,
 	}
 	out := make(map[string]*template.Template, len(pages))
 	for _, name := range pages {
@@ -69,6 +75,15 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request, status int, name
 		// The client likely went away mid-write; log once and move on.
 		s.deps.Logger.Warn("writing response body", "err", err)
 	}
+}
+
+// dateISO formats a time as YYYY-MM-DD for date inputs and display; a zero time
+// renders as empty so a new invoice's unset fields show blank.
+func dateISO(t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+	return t.Format("2006-01-02")
 }
 
 // money formats a minor-unit amount as a plain decimal string (e.g. 123456 →

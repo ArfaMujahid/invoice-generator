@@ -3,7 +3,13 @@
 // persistence repository (SRS Modules 2 & 3).
 package invoice
 
-import "time"
+import (
+	"fmt"
+	"strings"
+	"time"
+
+	"github.com/ArfaMujahid/invoice-generator/internal/apperr"
+)
 
 // Money is a monetary amount in integer minor units (e.g. cents). Integers are
 // used instead of floats so totals never accumulate binary rounding error.
@@ -113,4 +119,61 @@ type Summary struct {
 	TotalPaid        Money
 	TotalOutstanding Money
 	TotalOverdue     Money
+}
+
+// ListItem is a lightweight invoice row for tables (invoice list, client
+// history). It carries the client name and computed amounts so the list view
+// needs no further lookups. Dates are kept as display strings.
+type ListItem struct {
+	ID         int64
+	Number     string
+	ClientID   int64
+	ClientName string
+	IssueDate  string
+	DueDate    string
+	Status     Status
+	Currency   string
+	Total      Money
+	Paid       Money
+	Balance    Money
+}
+
+// Validate checks the invoice is well-formed before it is saved: a client, both
+// dates, a currency, a sane tax rate, and at least one complete line item
+// (FR-2.1, FR-2.2). It returns an *apperr.ValidationError listing every problem.
+func (inv Invoice) Validate() error {
+	v := apperr.NewValidationError()
+	if inv.ClientID <= 0 {
+		v.Add("client_id", "select a client")
+	}
+	if inv.IssueDate.IsZero() {
+		v.Add("issue_date", "issue date is required")
+	}
+	if inv.DueDate.IsZero() {
+		v.Add("due_date", "due date is required")
+	}
+	if strings.TrimSpace(inv.Currency) == "" {
+		v.Add("currency", "currency is required")
+	}
+	if inv.TaxRate < 0 || inv.TaxRate > 100 {
+		v.Add("tax_rate", "tax rate must be between 0 and 100")
+	}
+	if len(inv.LineItems) == 0 {
+		v.Add("line_items", "add at least one line item")
+	}
+	for i, li := range inv.LineItems {
+		if strings.TrimSpace(li.Description) == "" {
+			v.Add(fmt.Sprintf("line_%d_description", i), "description is required")
+		}
+		if li.Quantity <= 0 {
+			v.Add(fmt.Sprintf("line_%d_quantity", i), "quantity must be positive")
+		}
+		if li.UnitPrice < 0 {
+			v.Add(fmt.Sprintf("line_%d_unit_price", i), "price cannot be negative")
+		}
+	}
+	if v.HasErrors() {
+		return v
+	}
+	return nil
 }
