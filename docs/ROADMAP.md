@@ -18,7 +18,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ todo
 | 0.1 | Project setup: Go server, SQLite schema, embedded templates, base layout, tooling | §8.3 step 1 | ✅ |
 | 0.2 | Dashboard summary cards with live aggregates | FR-3.2 | ✅ |
 | 0.3 | Panic-recovery guard + middleware chain | NFR-R3 | ✅ |
-| 0.4 | Data-access foundation: `store.WithTx` transaction helper, form-decode + flash/redirect (PRG) helpers | NFR-6 | ⬜ |
+| 0.4 | Data-access foundation: `store.WithTx` transaction helper, form-decode + flash/redirect (PRG) helpers | NFR-6 | ✅ |
 
 ## Phase 1 — Settings (Module 5) — *needed by PDF & email*
 

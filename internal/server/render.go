@@ -36,18 +36,29 @@ func parseTemplates() (map[string]*template.Template, error) {
 	return out, nil
 }
 
-// render writes the named page to w, executing the shared layout. It buffers
-// first so a template error becomes a clean 500 instead of a half-written
-// response.
-func (s *Server) render(w http.ResponseWriter, status int, name string, data any) {
+// templateData is the envelope passed to every page render: a one-shot flash
+// message (if any), plus the page-specific view data. Templates read the page
+// fields via .Data and the notification via .Flash.
+type templateData struct {
+	Flash *flash
+	Data  any
+}
+
+// render writes the named page to w, executing the shared layout. It pops any
+// pending flash (which sets a clearing cookie, so it must run before the status
+// is written) and buffers the output so a template error becomes a clean 500
+// instead of a half-written response.
+func (s *Server) render(w http.ResponseWriter, r *http.Request, status int, name string, data any) {
 	t, ok := s.templates[name]
 	if !ok {
 		s.serverError(w, fmt.Errorf("render: unknown template %q", name))
 		return
 	}
 
+	td := templateData{Flash: s.popFlash(w, r), Data: data}
+
 	var buf bytes.Buffer
-	if err := t.ExecuteTemplate(&buf, "layout", data); err != nil {
+	if err := t.ExecuteTemplate(&buf, "layout", td); err != nil {
 		s.serverError(w, fmt.Errorf("executing template %q: %w", name, err))
 		return
 	}

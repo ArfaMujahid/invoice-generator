@@ -5,19 +5,19 @@
 <section class="cards">
   <div class="card">
     <span class="card-label">Total invoiced</span>
-    <span class="card-value">{{money .Summary.TotalInvoiced}}</span>
+    <span class="card-value">{{money .Data.Summary.TotalInvoiced}}</span>
   </div>
   <div class="card">
     <span class="card-label">Total paid</span>
-    <span class="card-value">{{money .Summary.TotalPaid}}</span>
+    <span class="card-value">{{money .Data.Summary.TotalPaid}}</span>
   </div>
   <div class="card">
     <span class="card-label">Outstanding</span>
-    <span class="card-value">{{money .Summary.TotalOutstanding}}</span>
+    <span class="card-value">{{money .Data.Summary.TotalOutstanding}}</span>
   </div>
   <div class="card card--warn">
     <span class="card-label">Overdue</span>
-    <span class="card-value">{{money .Summary.TotalOverdue}}</span>
+    <span class="card-value">{{money .Data.Summary.TotalOverdue}}</span>
   </div>
 </section>
 

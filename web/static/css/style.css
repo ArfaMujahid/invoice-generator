@@ -74,6 +74,18 @@ h1 { margin-top: 0; }
   margin-top: 1.5rem;
 }
 
+/* One-shot flash notification (post-redirect-get). */
+.flash {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+  border: 1px solid transparent;
+  font-weight: 500;
+}
+.flash--success { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+.flash--error   { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+.flash--info    { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+
 .btn {
   display: inline-block;
   padding: 0.5rem 0.9rem;

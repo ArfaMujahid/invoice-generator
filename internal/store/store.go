@@ -72,6 +72,36 @@ func (s *Store) DB() *sql.DB {
 	return s.db
 }
 
+// WithTx runs fn inside a single transaction: it commits if fn returns nil and
+// rolls back on any error or panic. Centralising the begin/commit/rollback dance
+// keeps multi-statement writes (e.g. an invoice plus its line items) atomic
+// without each caller repeating the boilerplate.
+func (s *Store) WithTx(ctx context.Context, fn func(*sql.Tx) error) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("beginning transaction: %w", err)
+	}
+
+	// On panic, roll back then re-panic so the recover guard still sees it.
+	defer func() {
+		if p := recover(); p != nil {
+			_ = tx.Rollback()
+			panic(p)
+		}
+	}()
+
+	if err := fn(tx); err != nil {
+		if rbErr := tx.Rollback(); rbErr != nil {
+			return fmt.Errorf("rolling back after %v: %w", err, rbErr)
+		}
+		return err
+	}
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("committing transaction: %w", err)
+	}
+	return nil
+}
+
 // Close releases the database handle. It is safe to call once during shutdown.
 func (s *Store) Close() error {
 	if err := s.db.Close(); err != nil {

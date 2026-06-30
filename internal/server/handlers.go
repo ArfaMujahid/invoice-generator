@@ -34,10 +34,10 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	sum, err := s.deps.Invoices.Summary(r.Context())
 	if err != nil {
-		s.handleError(w, err)
+		s.handleError(w, r, err)
 		return
 	}
-	s.render(w, http.StatusOK, "dashboard", dashboardView{
+	s.render(w, r, http.StatusOK, "dashboard", dashboardView{
 		Title:   "Dashboard",
 		Summary: sum,
 	})
@@ -48,11 +48,11 @@ func (s *Server) handleDashboard(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleClientsList(w http.ResponseWriter, r *http.Request) {
 	_, err := s.deps.Clients.List(r.Context(), false)
 	if err != nil {
-		s.handleError(w, err)
+		s.handleError(w, r, err)
 		return
 	}
 	// TODO(arfa): render the clients table once the store query lands.
-	s.handleError(w, apperr.ErrNotImplemented)
+	s.handleError(w, r, apperr.ErrNotImplemented)
 }
 
 // handleInvoicesList will render the filterable invoice table (FR-3.3). Wired to
@@ -60,10 +60,10 @@ func (s *Server) handleClientsList(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleInvoicesList(w http.ResponseWriter, r *http.Request) {
 	_, err := s.deps.Invoices.List(r.Context(), invoice.Filter{})
 	if err != nil {
-		s.handleError(w, err)
+		s.handleError(w, r, err)
 		return
 	}
-	s.handleError(w, apperr.ErrNotImplemented)
+	s.handleError(w, r, apperr.ErrNotImplemented)
 }
 
 // handleSettings will render the business/SMTP settings form (SRS Module 5).
@@ -71,32 +71,32 @@ func (s *Server) handleInvoicesList(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleSettings(w http.ResponseWriter, r *http.Request) {
 	_, err := s.deps.Settings.Get(r.Context())
 	if err != nil {
-		s.handleError(w, err)
+		s.handleError(w, r, err)
 		return
 	}
-	s.handleError(w, apperr.ErrNotImplemented)
+	s.handleError(w, r, apperr.ErrNotImplemented)
 }
 
 // handleError maps a domain error to an HTTP status and renders the message
 // page. It centralises the error→status mapping so every handler reports
 // consistently (coding-standards §3: handle each error once, at the boundary).
-func (s *Server) handleError(w http.ResponseWriter, err error) {
+func (s *Server) handleError(w http.ResponseWriter, r *http.Request, err error) {
 	var verr *apperr.ValidationError
 	switch {
 	case errors.Is(err, apperr.ErrNotImplemented):
-		s.render(w, http.StatusNotImplemented, "message", messageView{
+		s.render(w, r, http.StatusNotImplemented, "message", messageView{
 			Title:   "Coming soon",
 			Heading: "Not implemented yet",
 			Body:    "This screen is part of the project skeleton and has not been built yet.",
 		})
 	case errors.Is(err, apperr.ErrNotFound):
-		s.render(w, http.StatusNotFound, "message", messageView{
+		s.render(w, r, http.StatusNotFound, "message", messageView{
 			Title:   "Not found",
 			Heading: "Not found",
 			Body:    "The requested item does not exist.",
 		})
 	case errors.As(err, &verr):
-		s.render(w, http.StatusBadRequest, "message", messageView{
+		s.render(w, r, http.StatusBadRequest, "message", messageView{
 			Title:   "Invalid input",
 			Heading: "Please check your input",
 			Body:    verr.Error(),
