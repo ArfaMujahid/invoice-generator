@@ -66,17 +66,6 @@ func (s *Server) handleInvoicesList(w http.ResponseWriter, r *http.Request) {
 	s.handleError(w, r, apperr.ErrNotImplemented)
 }
 
-// handleSettings will render the business/SMTP settings form (SRS Module 5).
-// Wired to the settings store, currently apperr.ErrNotImplemented → HTTP 501.
-func (s *Server) handleSettings(w http.ResponseWriter, r *http.Request) {
-	_, err := s.deps.Settings.Get(r.Context())
-	if err != nil {
-		s.handleError(w, r, err)
-		return
-	}
-	s.handleError(w, r, apperr.ErrNotImplemented)
-}
-
 // handleError maps a domain error to an HTTP status and renders the message
 // page. It centralises the error→status mapping so every handler reports
 // consistently (coding-standards §3: handle each error once, at the boundary).

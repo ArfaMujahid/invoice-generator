@@ -1,0 +1,40 @@
+{{define "content"}}
+<h1>Settings</h1>
+<p class="muted">Business profile — shown on every invoice PDF (FR-5.1).</p>
+
+<form class="form" method="post" action="/settings" enctype="multipart/form-data">
+  <section class="panel">
+    <h2>Business profile</h2>
+
+    <label class="field">
+      <span class="field-label">Business name</span>
+      <input type="text" name="business_name" value="{{.Data.Settings.BusinessName}}" required>
+      {{with index .Data.Errors "business_name"}}<span class="field-error">{{.}}</span>{{end}}
+    </label>
+
+    <label class="field">
+      <span class="field-label">Address</span>
+      <textarea name="business_address" rows="3">{{.Data.Settings.BusinessAddress}}</textarea>
+      {{with index .Data.Errors "business_address"}}<span class="field-error">{{.}}</span>{{end}}
+    </label>
+
+    <label class="field">
+      <span class="field-label">Tax ID</span>
+      <input type="text" name="tax_id" value="{{.Data.Settings.TaxID}}">
+      {{with index .Data.Errors "tax_id"}}<span class="field-error">{{.}}</span>{{end}}
+    </label>
+
+    <label class="field">
+      <span class="field-label">Logo</span>
+      <input type="file" name="logo" accept="image/png,image/jpeg,image/gif,image/webp">
+      <span class="field-hint">PNG, JPEG, GIF, or WebP. Leave empty to keep the current logo.</span>
+      {{with index .Data.Errors "logo"}}<span class="field-error">{{.}}</span>{{end}}
+      {{with .Data.Settings.LogoPath}}<img class="logo-preview" src="/uploads/{{.}}" alt="Current logo">{{end}}
+    </label>
+
+    <div class="actions">
+      <button type="submit" class="btn">Save profile</button>
+    </div>
+  </section>
+</form>
+{{end}}

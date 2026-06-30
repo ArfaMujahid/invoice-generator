@@ -33,6 +33,9 @@ type Config struct {
 	IdleTimeout time.Duration
 	// MaxUploadBytes caps the size of an uploaded logo image (NFR-S2).
 	MaxUploadBytes int64
+	// UploadsDir is the on-disk directory where uploaded assets (the business
+	// logo) are stored and served from.
+	UploadsDir string
 }
 
 // Load reads configuration from command-line flags, falling back to environment
@@ -45,6 +48,7 @@ func Load() (Config, error) {
 	fs.StringVar(&cfg.Addr, "addr", cfg.Addr, "host:port to listen on")
 	fs.StringVar(&cfg.DatabasePath, "db", cfg.DatabasePath, "path to the SQLite database file")
 	fs.BoolVar(&cfg.Dev, "dev", cfg.Dev, "enable development mode (text logs)")
+	fs.StringVar(&cfg.UploadsDir, "uploads", cfg.UploadsDir, "directory for uploaded assets (logo)")
 	if err := fs.Parse(os.Args[1:]); err != nil {
 		return Config{}, fmt.Errorf("parsing flags: %w", err)
 	}
@@ -67,6 +71,7 @@ func defaults() Config {
 		WriteTimeout:   30 * time.Second,
 		IdleTimeout:    120 * time.Second,
 		MaxUploadBytes: 5 << 20, // 5 MiB is plenty for a logo image.
+		UploadsDir:     env("INVOICE_UPLOADS", "uploads"),
 	}
 }
 
@@ -81,6 +86,9 @@ func (c Config) Validate() error {
 	}
 	if c.MaxUploadBytes <= 0 {
 		return fmt.Errorf("config: max upload bytes must be positive, got %d", c.MaxUploadBytes)
+	}
+	if strings.TrimSpace(c.UploadsDir) == "" {
+		return fmt.Errorf("config: uploads dir must not be empty")
 	}
 	return nil
 }

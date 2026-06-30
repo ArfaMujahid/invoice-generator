@@ -29,6 +29,16 @@ func parseForm(r *http.Request) (*form, error) {
 	return &form{values: r.PostForm, Errors: apperr.NewValidationError()}, nil
 }
 
+// parseMultipartForm parses a multipart/form-data body (used by forms with file
+// uploads), keeping up to maxMemory bytes in memory before spilling to temp
+// files, and returns a form over its non-file values.
+func parseMultipartForm(r *http.Request, maxMemory int64) (*form, error) {
+	if err := r.ParseMultipartForm(maxMemory); err != nil {
+		return nil, fmt.Errorf("parsing multipart form: %w", err)
+	}
+	return &form{values: r.PostForm, Errors: apperr.NewValidationError()}, nil
+}
+
 // String returns the trimmed value of field, or "" if absent.
 func (f *form) String(field string) string {
 	return strings.TrimSpace(f.values.Get(field))

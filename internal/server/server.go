@@ -40,7 +40,7 @@ type Invoices interface {
 // Module 5).
 type SettingsStore interface {
 	Get(ctx context.Context) (settings.Settings, error)
-	Save(ctx context.Context, cfg settings.Settings) error
+	SaveProfile(ctx context.Context, cfg settings.Settings) error
 }
 
 // PDFRenderer renders an invoice to PDF bytes (FR-2.4).
@@ -92,16 +92,21 @@ func (s *Server) routes() http.Handler {
 	// Static assets served straight from the embedded filesystem.
 	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServerFS(web.Static())))
 
+	// Uploaded assets (business logo) served from disk. http.Dir blocks path
+	// traversal above the uploads directory.
+	mux.Handle("GET /uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir(s.deps.Config.UploadsDir))))
+
 	// Liveness probe for deployment platforms.
 	mux.HandleFunc("GET /healthz", s.handleHealth)
 
-	// Screens (SRS §5). Implemented: dashboard. The rest are wired to their
-	// domain services, which currently return apperr.ErrNotImplemented (HTTP 501)
-	// until each module is built.
+	// Screens (SRS §5). Implemented: dashboard, settings. The rest are wired to
+	// their domain services, which currently return apperr.ErrNotImplemented
+	// (HTTP 501) until each module is built.
 	mux.HandleFunc("GET /", s.handleDashboard)
 	mux.HandleFunc("GET /clients", s.handleClientsList)
 	mux.HandleFunc("GET /invoices", s.handleInvoicesList)
 	mux.HandleFunc("GET /settings", s.handleSettings)
+	mux.HandleFunc("POST /settings", s.handleSettingsSave)
 
 	// Logging is outermost so it records the final status even when recoverer
 	// converts a handler panic into a 500.
