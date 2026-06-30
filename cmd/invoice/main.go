@@ -17,6 +17,7 @@ import (
 	"github.com/ArfaMujahid/invoice-generator/internal/email"
 	"github.com/ArfaMujahid/invoice-generator/internal/invoice"
 	"github.com/ArfaMujahid/invoice-generator/internal/pdf"
+	"github.com/ArfaMujahid/invoice-generator/internal/scheduler"
 	"github.com/ArfaMujahid/invoice-generator/internal/server"
 	"github.com/ArfaMujahid/invoice-generator/internal/settings"
 	"github.com/ArfaMujahid/invoice-generator/internal/store"
@@ -62,6 +63,17 @@ func run() error {
 	cfgStore := settings.NewStore(st)
 	pdfGen := pdf.NewGenerator(cfg.UploadsDir)
 	mailer := email.NewSMTPSender()
+
+	// Background scheduler: daily overdue marking (FR-3.4) and auto-reminders
+	// (FR-4.5). It stops when ctx is cancelled, alongside the server.
+	sched := scheduler.New(scheduler.Deps{
+		Invoices: invoices,
+		Settings: cfgStore,
+		Clients:  clients,
+		Mailer:   mailer,
+		Logger:   logger,
+	})
+	go sched.Run(ctx)
 
 	srv := server.New(server.Deps{
 		Config:   cfg,

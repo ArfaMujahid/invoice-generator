@@ -93,6 +93,20 @@ func (s *Store) Get(ctx context.Context, id int64) (Client, error) {
 	return c, nil
 }
 
+// Email returns just the client's email address, used by the reminder scheduler
+// to avoid loading the full record. Returns apperr.ErrNotFound if absent.
+func (s *Store) Email(ctx context.Context, id int64) (string, error) {
+	var email string
+	err := s.st.DB().QueryRowContext(ctx, `SELECT email FROM clients WHERE id = ?`, id).Scan(&email)
+	if errors.Is(err, sql.ErrNoRows) {
+		return "", apperr.ErrNotFound
+	}
+	if err != nil {
+		return "", fmt.Errorf("loading client %d email: %w", id, err)
+	}
+	return email, nil
+}
+
 // listQuery returns each client with its invoiced total (excluding drafts) and
 // outstanding balance (invoiced minus payments). The ? parameter, when 1,
 // includes archived clients.

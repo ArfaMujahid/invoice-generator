@@ -65,7 +65,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ todo
 | 5.1 | Invoice status Draft/Sent/Paid/Overdue + manual change | FR-3.1 | Must | ✅ |
 | 5.2 | Invoice list: filter by status/client/date, search | FR-3.3 | Must | ✅ |
 | 5.3 | Record partial payments; show remaining balance | FR-3.5 | Should | ✅ |
-| 5.4 | Daily job: mark unpaid past-due invoices Overdue | FR-3.4 | Should | ⬜ |
+| 5.4 | Daily job: mark unpaid past-due invoices Overdue | FR-3.4 | Should | ✅ |
 | 5.5 | Dashboard monthly invoiced-vs-collected chart | FR-3.6 | Nice | ⬜ |
 
 ## Phase 6 — Email & reminders (Module 4)
@@ -76,7 +76,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ todo
 | 6.2 | Sending sets status to Sent | FR-4.2 | Must | ✅ |
 | 6.3 | Manual payment-reminder email (template) | FR-4.3 | Should | ✅ |
 | 6.4 | Record emailed-at + reminder count | FR-4.4 | Should | ✅ |
-| 6.5 | Auto-reminders N days before/after due date | FR-4.5 | Nice | ⬜ |
+| 6.5 | Auto-reminders N days before/after due date | FR-4.5 | Nice | ✅ |
 
 ---
 
