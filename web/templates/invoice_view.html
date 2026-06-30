@@ -54,6 +54,19 @@
 </section>
 
 <section class="panel">
+  <h2>Delivery</h2>
+  {{if $inv.SentAt}}<p class="muted">This invoice has been emailed. Reminders sent: {{$inv.RemindersSent}}.</p>{{end}}
+  <div class="actions">
+    <form class="inline-form" method="post" action="/invoices/{{$inv.ID}}/send">
+      <button type="submit" class="btn">Send invoice to client</button>
+    </form>
+    <form class="inline-form" method="post" action="/invoices/{{$inv.ID}}/remind">
+      <button type="submit" class="btn btn--secondary">Send reminder</button>
+    </form>
+  </div>
+</section>
+
+<section class="panel">
   <h2>Status</h2>
   {{$st := printf "%s" $inv.Status}}
   <form class="inline-form" method="post" action="/invoices/{{$inv.ID}}/status">

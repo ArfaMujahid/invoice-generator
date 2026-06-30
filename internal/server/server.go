@@ -130,6 +130,8 @@ func (s *Server) routes() http.Handler {
 	mux.HandleFunc("POST /invoices/{id}", s.handleInvoiceUpdate)
 	mux.HandleFunc("POST /invoices/{id}/status", s.handleInvoiceStatus)
 	mux.HandleFunc("POST /invoices/{id}/payments", s.handleInvoicePayment)
+	mux.HandleFunc("POST /invoices/{id}/send", s.handleInvoiceSend)
+	mux.HandleFunc("POST /invoices/{id}/remind", s.handleInvoiceRemind)
 
 	mux.HandleFunc("GET /settings", s.handleSettings)
 	mux.HandleFunc("POST /settings", s.handleSettingsSave)

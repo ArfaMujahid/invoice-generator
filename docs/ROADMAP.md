@@ -72,10 +72,10 @@ Legend: ✅ done · 🟡 in progress · ⬜ todo
 
 | # | Item | Req | Pri | Status |
 |---|------|-----|-----|--------|
-| 6.1 | Email invoice (PDF attached) via SMTP, one click | FR-4.1 | Must | ⬜ |
-| 6.2 | Sending sets status to Sent | FR-4.2 | Must | ⬜ |
-| 6.3 | Manual payment-reminder email (template) | FR-4.3 | Should | ⬜ |
-| 6.4 | Record emailed-at + reminder count | FR-4.4 | Should | ⬜ |
+| 6.1 | Email invoice (PDF attached) via SMTP, one click | FR-4.1 | Must | ✅ |
+| 6.2 | Sending sets status to Sent | FR-4.2 | Must | ✅ |
+| 6.3 | Manual payment-reminder email (template) | FR-4.3 | Should | ✅ |
+| 6.4 | Record emailed-at + reminder count | FR-4.4 | Should | ✅ |
 | 6.5 | Auto-reminders N days before/after due date | FR-4.5 | Nice | ⬜ |
 
 ---
