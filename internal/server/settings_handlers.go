@@ -106,6 +106,81 @@ func (s *Server) handleSettingsSave(w http.ResponseWriter, r *http.Request) {
 	s.redirect(w, r, "/settings")
 }
 
+// handleSettingsSaveSMTP validates and persists the SMTP delivery settings
+// (FR-5.2), then redirects with a flash (post-redirect-get).
+func (s *Server) handleSettingsSaveSMTP(w http.ResponseWriter, r *http.Request) {
+	f, err := parseForm(r)
+	if err != nil {
+		s.handleError(w, r, err)
+		return
+	}
+	cfg, err := s.deps.Settings.Get(r.Context())
+	if err != nil {
+		s.handleError(w, r, err)
+		return
+	}
+
+	cfg.SMTPHost = f.Required("smtp_host", "SMTP host")
+	cfg.SMTPPort = f.Int("smtp_port", 587)
+	cfg.SMTPUsername = f.Required("smtp_username", "SMTP username")
+	// The password is never rendered back to the page (NFR-4); a blank field
+	// means "keep the stored password" rather than clearing it.
+	if pw := f.String("smtp_password"); pw != "" {
+		cfg.SMTPPassword = pw
+	}
+
+	if !f.Valid() {
+		s.render(w, r, http.StatusUnprocessableEntity, "settings", settingsView{
+			Title:    "Settings",
+			Settings: cfg,
+			Errors:   f.Errors.Fields,
+		})
+		return
+	}
+	if err := s.deps.Settings.SaveSMTP(r.Context(), cfg); err != nil {
+		s.serverError(w, err)
+		return
+	}
+	s.setFlash(w, flashSuccess, "SMTP settings saved.")
+	s.redirect(w, r, "/settings")
+}
+
+// handleSettingsTestSMTP tests an authenticated SMTP session using the submitted
+// settings (so they can be verified before saving) and reports the result via a
+// flash (FR-5.2).
+func (s *Server) handleSettingsTestSMTP(w http.ResponseWriter, r *http.Request) {
+	f, err := parseForm(r)
+	if err != nil {
+		s.handleError(w, r, err)
+		return
+	}
+	// Start from stored settings (so a blank password field reuses the saved
+	// one), then apply any values typed into the form.
+	cfg, err := s.deps.Settings.Get(r.Context())
+	if err != nil {
+		s.handleError(w, r, err)
+		return
+	}
+	if v := f.String("smtp_host"); v != "" {
+		cfg.SMTPHost = v
+	}
+	if v := f.Int("smtp_port", 0); v != 0 {
+		cfg.SMTPPort = v
+	}
+	if v := f.String("smtp_username"); v != "" {
+		cfg.SMTPUsername = v
+	}
+	if v := f.String("smtp_password"); v != "" {
+		cfg.SMTPPassword = v
+	}
+	if err := s.deps.Mailer.TestConnection(r.Context(), cfg); err != nil {
+		s.setFlash(w, flashError, "SMTP test failed: "+err.Error())
+	} else {
+		s.setFlash(w, flashSuccess, "SMTP connection succeeded.")
+	}
+	s.redirect(w, r, "/settings")
+}
+
 // saveLogo validates an uploaded logo by sniffing its content type, then writes
 // it into the uploads directory under a stable name, returning that filename. It
 // returns an *apperr.ValidationError for an unsupported image type so the caller

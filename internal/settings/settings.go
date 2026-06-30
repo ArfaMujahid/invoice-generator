@@ -7,7 +7,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ArfaMujahid/invoice-generator/internal/apperr"
 	"github.com/ArfaMujahid/invoice-generator/internal/store"
 )
 
@@ -90,10 +89,19 @@ func (s *Store) SaveProfile(ctx context.Context, cfg Settings) error {
 	return nil
 }
 
+// saveSMTPQuery updates only the SMTP delivery columns.
+const saveSMTPQuery = `
+UPDATE settings
+SET smtp_host = ?, smtp_port = ?, smtp_username = ?, smtp_password = ?
+WHERE id = 1`
+
 // SaveSMTP persists only the SMTP delivery settings (FR-5.2), kept separate so
 // credentials are handled on their own code path.
-//
-// TODO(arfa): UPDATE settings SET smtp_* WHERE id = 1.
 func (s *Store) SaveSMTP(ctx context.Context, cfg Settings) error {
-	return apperr.ErrNotImplemented
+	if _, err := s.st.DB().ExecContext(ctx, saveSMTPQuery,
+		cfg.SMTPHost, cfg.SMTPPort, cfg.SMTPUsername, cfg.SMTPPassword,
+	); err != nil {
+		return fmt.Errorf("saving smtp settings: %w", err)
+	}
+	return nil
 }

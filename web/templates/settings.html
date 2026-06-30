@@ -37,4 +37,42 @@
     </div>
   </section>
 </form>
+
+<form class="form" method="post" action="/settings/smtp">
+  <section class="panel">
+    <h2>Email (SMTP)</h2>
+    <p class="muted">Used to send invoices and reminders. Credentials are stored
+    server-side and never shown here (NFR-4).</p>
+
+    <label class="field">
+      <span class="field-label">SMTP host</span>
+      <input type="text" name="smtp_host" value="{{.Data.Settings.SMTPHost}}" placeholder="smtp.gmail.com">
+      {{with index .Data.Errors "smtp_host"}}<span class="field-error">{{.}}</span>{{end}}
+    </label>
+
+    <label class="field">
+      <span class="field-label">SMTP port</span>
+      <input type="text" name="smtp_port" value="{{.Data.Settings.SMTPPort}}" placeholder="587">
+      {{with index .Data.Errors "smtp_port"}}<span class="field-error">{{.}}</span>{{end}}
+    </label>
+
+    <label class="field">
+      <span class="field-label">Username</span>
+      <input type="text" name="smtp_username" value="{{.Data.Settings.SMTPUsername}}" placeholder="you@example.com">
+      {{with index .Data.Errors "smtp_username"}}<span class="field-error">{{.}}</span>{{end}}
+    </label>
+
+    <label class="field">
+      <span class="field-label">Password</span>
+      <input type="password" name="smtp_password" placeholder="leave blank to keep current">
+      <span class="field-hint">For Gmail, use an app password.</span>
+      {{with index .Data.Errors "smtp_password"}}<span class="field-error">{{.}}</span>{{end}}
+    </label>
+
+    <div class="actions">
+      <button type="submit" class="btn">Save SMTP</button>
+      <button type="submit" class="btn btn--secondary" formaction="/settings/smtp/test">Test connection</button>
+    </div>
+  </section>
+</form>
 {{end}}
