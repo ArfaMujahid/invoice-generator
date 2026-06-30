@@ -1,0 +1,39 @@
+{{define "content"}}
+<h1>{{.Data.Title}}</h1>
+
+<form class="form" method="post" action="{{.Data.Action}}">
+  <section class="panel">
+    <label class="field">
+      <span class="field-label">Name</span>
+      <input type="text" name="name" value="{{.Data.Client.Name}}" required>
+      {{with index .Data.Errors "name"}}<span class="field-error">{{.}}</span>{{end}}
+    </label>
+
+    <label class="field">
+      <span class="field-label">Email</span>
+      <input type="text" name="email" value="{{.Data.Client.Email}}" required>
+      {{with index .Data.Errors "email"}}<span class="field-error">{{.}}</span>{{end}}
+    </label>
+
+    <label class="field">
+      <span class="field-label">Phone</span>
+      <input type="text" name="phone" value="{{.Data.Client.Phone}}">
+    </label>
+
+    <label class="field">
+      <span class="field-label">Company</span>
+      <input type="text" name="company" value="{{.Data.Client.Company}}">
+    </label>
+
+    <label class="field">
+      <span class="field-label">Billing address</span>
+      <textarea name="billing_address" rows="3">{{.Data.Client.BillingAddress}}</textarea>
+    </label>
+
+    <div class="actions">
+      <button type="submit" class="btn">Save</button>
+      <a class="btn btn--secondary" href="/clients">Cancel</a>
+    </div>
+  </section>
+</form>
+{{end}}

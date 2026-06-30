@@ -23,9 +23,11 @@ import (
 
 // Clients is the subset of client operations the HTTP layer needs (SRS Module 1).
 type Clients interface {
-	List(ctx context.Context, includeArchived bool) ([]client.Client, error)
+	List(ctx context.Context, includeArchived bool) ([]client.ListItem, error)
 	Get(ctx context.Context, id int64) (client.Client, error)
 	Create(ctx context.Context, c client.Client) (client.Client, error)
+	Update(ctx context.Context, c client.Client) (client.Client, error)
+	Archive(ctx context.Context, id int64) error
 }
 
 // Invoices is the subset of invoice operations the HTTP layer needs (SRS
@@ -105,7 +107,14 @@ func (s *Server) routes() http.Handler {
 	// their domain services, which currently return apperr.ErrNotImplemented
 	// (HTTP 501) until each module is built.
 	mux.HandleFunc("GET /", s.handleDashboard)
+
 	mux.HandleFunc("GET /clients", s.handleClientsList)
+	mux.HandleFunc("GET /clients/new", s.handleClientNew)
+	mux.HandleFunc("POST /clients", s.handleClientCreate)
+	mux.HandleFunc("GET /clients/{id}/edit", s.handleClientEdit)
+	mux.HandleFunc("POST /clients/{id}", s.handleClientUpdate)
+	mux.HandleFunc("POST /clients/{id}/archive", s.handleClientArchive)
+
 	mux.HandleFunc("GET /invoices", s.handleInvoicesList)
 	mux.HandleFunc("GET /settings", s.handleSettings)
 	mux.HandleFunc("POST /settings", s.handleSettingsSave)

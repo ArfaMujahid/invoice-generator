@@ -43,18 +43,6 @@ func (s *Server) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// handleClientsList will render the clients table (FR-1.3). It is wired to the
-// client store, which currently reports apperr.ErrNotImplemented → HTTP 501.
-func (s *Server) handleClientsList(w http.ResponseWriter, r *http.Request) {
-	_, err := s.deps.Clients.List(r.Context(), false)
-	if err != nil {
-		s.handleError(w, r, err)
-		return
-	}
-	// TODO(arfa): render the clients table once the store query lands.
-	s.handleError(w, r, apperr.ErrNotImplemented)
-}
-
 // handleInvoicesList will render the filterable invoice table (FR-3.3). Wired to
 // the invoice store, currently apperr.ErrNotImplemented → HTTP 501.
 func (s *Server) handleInvoicesList(w http.ResponseWriter, r *http.Request) {

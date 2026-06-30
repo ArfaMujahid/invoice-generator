@@ -12,7 +12,7 @@ import (
 
 // pages lists the content templates that are each compiled together with the
 // shared layout. Add a page's base name here when you add its template file.
-var pages = []string{"dashboard", "message", "settings"}
+var pages = []string{"dashboard", "message", "settings", "clients", "client_form"}
 
 // parseTemplates compiles every page in pages with the shared layout and the
 // view helper functions, returning a name→template map. It is called once at
