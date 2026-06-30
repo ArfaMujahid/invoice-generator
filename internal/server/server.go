@@ -103,7 +103,9 @@ func (s *Server) routes() http.Handler {
 	mux.HandleFunc("GET /invoices", s.handleInvoicesList)
 	mux.HandleFunc("GET /settings", s.handleSettings)
 
-	return s.withLogging(mux)
+	// Logging is outermost so it records the final status even when recoverer
+	// converts a handler panic into a 500.
+	return chain(mux, s.withLogging, s.recoverer)
 }
 
 // Run starts the HTTP server and blocks until ctx is cancelled, then shuts down

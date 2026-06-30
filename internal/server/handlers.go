@@ -3,7 +3,6 @@ package server
 import (
 	"errors"
 	"net/http"
-	"time"
 
 	"github.com/ArfaMujahid/invoice-generator/internal/apperr"
 	"github.com/ArfaMujahid/invoice-generator/internal/invoice"
@@ -116,33 +115,4 @@ func (s *Server) serverError(w http.ResponseWriter, err error) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusInternalServerError)
 	_, _ = w.Write([]byte("<h1>Something went wrong</h1><p>Please try again.</p>"))
-}
-
-// statusRecorder wraps http.ResponseWriter to capture the status code for access
-// logging.
-type statusRecorder struct {
-	http.ResponseWriter
-	status int
-}
-
-// WriteHeader records the status code before delegating to the wrapped writer.
-func (r *statusRecorder) WriteHeader(code int) {
-	r.status = code
-	r.ResponseWriter.WriteHeader(code)
-}
-
-// withLogging logs one structured line per request at the boundary (§9),
-// including method, path, status, and duration.
-func (s *Server) withLogging(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		rec := &statusRecorder{ResponseWriter: w, status: http.StatusOK}
-		next.ServeHTTP(rec, r)
-		s.deps.Logger.Info("request",
-			"method", r.Method,
-			"path", r.URL.Path,
-			"status", rec.status,
-			"duration_ms", time.Since(start).Milliseconds(),
-		)
-	})
 }
